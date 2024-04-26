@@ -1,4 +1,4 @@
-import { getAllUsers, addNewUser, deleteUserById } from "../database/usersDB.js";
+import { getAllUsers, addNewUser, deleteUserById, getUser } from "../database/usersDB.js";
 
 export const getUsers = async (req, res) => {
     try {
@@ -7,6 +7,17 @@ export const getUsers = async (req, res) => {
     } catch (err) {
         console.error("Error fetching users:", err);
         res.status(500).json({ message: "Could not get users" });
+    }
+};
+
+export const getUserById = async (req, res) => {
+    try {
+        const {id} = req.body;
+        const users = await getUser(id);
+        res.status(200).json(users);
+    } catch (err) {
+        console.error("Error getting user:", err.message);
+        res.status(500).json({ message: err.message });
     }
 };
 
@@ -23,8 +34,8 @@ export const addUser = async (req, res) => {
 
 export const deleteUser = async (req, res) => {
     try {
-        const userId = req.body;
-        const deletedUser = await deleteUserById(userId.id);
+        const {id} = req.body;
+        const deletedUser = await deleteUserById(id);
         res.status(200).json(deletedUser);
     } catch (err) {
         console.error("Error deleting user:", err);

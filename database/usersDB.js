@@ -31,13 +31,16 @@ export const getAllUsers = async () => {
   }
 };
 
-export const getUsers = async (userId) => {
+export const getUser = async (userId) => {
   try {
-    const users = await User.findById(userId);
-    console.log(users);
-    return users;
+    const user = await User.findById(userId);
+    if(!user) {
+      throw new Error("No user with provided id");
+    }
+    console.log(user);
+    return user;
   } catch (err) {
-    console.error("Getting all users failed: ", err);
+    console.error("Getting user failed: ", err);
     throw err;
   }
 };
