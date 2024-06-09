@@ -31,6 +31,19 @@ export const getAllUsers = async () => {
   }
 };
 
+export const getUserByEmail = async (userEmail) => {
+  try {
+    const user = await User.findOne({email: userEmail});
+    if(!user){
+      throw new Error("No user with provided Email");
+    }
+    console.log(user);
+    return user;
+  } catch (err) {
+    throw err;
+  }
+}
+
 export const getUser = async (userId) => {
   try {
     const user = await User.findById(userId);

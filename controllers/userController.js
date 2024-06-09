@@ -1,4 +1,4 @@
-import { getAllUsers, addNewUser, deleteUserById, getUser, updateUserData } from "../database/usersDB.js";
+import { getAllUsers, addNewUser, deleteUserById, getUser, updateUserData, getUserByEmail } from "../database/usersDB.js";
 import bcrypt from "bcrypt";
 
 export const getUsers = async (req, res) => {
@@ -54,5 +54,16 @@ export const updateUser = async (req, res) => {
     catch (err){
         console.log(err.message);
         res.status(500).json({message: err.message});
+    }
+}
+
+export const loginUser = async (req, res) => {
+    try {
+        const {email, password} = req.body;
+        console.log(email, password);
+        const user = await getUserByEmail(email);
+        res.status(200).json({ message: user});
+    } catch (err) {
+        res.status(500).json({message: err.message})
     }
 }

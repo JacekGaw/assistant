@@ -5,11 +5,13 @@ import bodyParser from "body-parser";
 import OpenAI from "openai";
 import connectDB from "./database/connectionDB.js";
 import userRouter from "./routes/userRoutes.js";
+import cors from "cors"; 
 connectDB();
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const app = express();
 app.use(bodyParser.json());
+app.use(cors()); 
 
 const PORT = process.env.PORT;
 
