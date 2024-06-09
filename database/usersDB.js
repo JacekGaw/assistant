@@ -1,15 +1,15 @@
 import User from "../models/UserShema.js";
 
-export const addNewUser = async ({ name, email, password, role }) => {
+export const addNewUser = async ({ name, email, hashedPassword, role }) => {
   try {
-    const user = User.findOne({email});
+    const user = await User.findOne({email});
     if(user){
         throw new Error("User already registered");
     }
     const newUser = new User({
       name,
       email,
-      password,
+      password: hashedPassword,
       role,
     });
     const savedUser = await newUser.save();
@@ -31,6 +31,19 @@ export const getAllUsers = async () => {
   }
 };
 
+export const getUserByEmail = async (userEmail) => {
+  try {
+    const user = await User.findOne({email: userEmail});
+    if(!user){
+      throw new Error("No user with provided Email");
+    }
+    console.log(user);
+    return user;
+  } catch (err) {
+    throw err;
+  }
+}
+
 export const getUser = async (userId) => {
   try {
     const user = await User.findById(userId);
@@ -48,6 +61,9 @@ export const getUser = async (userId) => {
 export const deleteUserById = async (userId) => {
   try {
     const user = await User.findByIdAndDelete(userId);
+    if(!user){
+      throw new Error("No user to delete");
+    }
     console.log(user);
     return user;
   } catch (err) {
@@ -55,3 +71,17 @@ export const deleteUserById = async (userId) => {
     throw err;
   }
 };
+
+export const updateUserData = async (userId, update) => {
+  try {
+    const updatedUser = await User.findByIdAndUpdate({_id: userId}, update);
+    if(!updatedUser){
+      throw new Error("Could not update user. User do not exist or data is invalid");
+    }
+    console.log(updatedUser);
+    return updatedUser;
+  }
+  catch (err) {
+    throw err;
+  }
+}

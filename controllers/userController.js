@@ -1,4 +1,5 @@
-import { getAllUsers, addNewUser, deleteUserById, getUser } from "../database/usersDB.js";
+import { getAllUsers, addNewUser, deleteUserById, getUser, updateUserData, getUserByEmail } from "../database/usersDB.js";
+import bcrypt from "bcrypt";
 
 export const getUsers = async (req, res) => {
     try {
@@ -24,7 +25,8 @@ export const getUserById = async (req, res) => {
 export const addUser = async (req, res) => {
     try {
         const {name, email, password, role} = req.body;
-        const addedUser = await addNewUser({name, email, password, role});
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const addedUser = await addNewUser({name, email, hashedPassword, role});
         res.status(200).json(addedUser);
     } catch (err) {
         console.error("Error adding new user:", err.message);
@@ -38,7 +40,30 @@ export const deleteUser = async (req, res) => {
         const deletedUser = await deleteUserById(id);
         res.status(200).json(deletedUser);
     } catch (err) {
-        console.error("Error deleting user:", err);
-        res.status(500).json({ message: "Error deleting user" });
+        console.error("Error deleting user:", err.message);
+        res.status(500).json({ message: err.message });
     }
 };
+
+export const updateUser = async (req, res) => {
+    try {
+        const {id, update} = req.body;
+        const userUpdated = await updateUserData(id, update);
+        res.status(200).json({message: userUpdated});
+    }
+    catch (err){
+        console.log(err.message);
+        res.status(500).json({message: err.message});
+    }
+}
+
+export const loginUser = async (req, res) => {
+    try {
+        const {email, password} = req.body;
+        console.log(email, password);
+        const user = await getUserByEmail(email);
+        res.status(200).json({ message: user});
+    } catch (err) {
+        res.status(500).json({message: err.message})
+    }
+}
