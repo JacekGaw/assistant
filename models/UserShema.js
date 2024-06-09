@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from 'bcrypt';
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -24,6 +25,7 @@ const userSchema = new mongoose.Schema({
     default: "user"
   }
 });
+
 
 const User = mongoose.model('User', userSchema);
 
