@@ -10,30 +10,19 @@ import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
 
 export const tokenRefresh = async (req, res) => {
-  const authHeader = req.headers["authorization"];
-
-  if (!authHeader) {
-    return res.status(401).json({ message: "Authorization header is missing" });
-  }
-
-  const token = authHeader.split(" ")[1];
-  if (!token) {
-    return res.status(401).json({ message: "No refresh token was presented" });
-  }
-
-  try {
-    const user = jwt.verify(token, process.env.REFRESH_JWT_SECRET);
-    if (!user) {
+  const user = req.user;
+  if (!user) {
       return res.status(404).json({ message: "User not found" });
-    }
-    const newAccessToken = jwt.sign(
-      { id: user._id, email: user.email },
-      process.env.ACCESS_JWT_SECRET,
-      { expiresIn: process.env.ACCESS_JWT_LIFE }
-    );
-    res.status(200).json({ accessToken: newAccessToken });
+  }
+  try {
+      const newAccessToken = jwt.sign(
+          { id: user.id, email: user.email, role: user.role },
+          process.env.ACCESS_TOKEN_SECRET,
+          { expiresIn: process.env.ACCESS_TOKEN_LIFE }
+      );
+      res.status(200).json({ accessToken: newAccessToken });
   } catch (err) {
-    res.status(403).json({ message: "Refresh token is invalid" });
+      res.status(403).json({ message: "Failed to generate new access token" });
   }
 };
 
@@ -113,6 +102,7 @@ export const loginUser = async (req, res) => {
 
     const user = await getUserByEmail(email);
     if (!user) {
+      console.log("User not found");
       return res
         .status(401)
         .json({ message: "Authentication failed. User not found." });
